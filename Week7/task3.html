@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <style>
+      #cards .card{
+        border:1px solid red;
+        display:flex;
+        width:300px;
+      }
+      #cards .card .title{
+        flex-grow: 1;
+      }
+      #cards .card .price{
+        font-weight: bold;
+        padding-right: 20px;
+      }
+      #loading{
+      }
+      #cards{
+        width:300px;
+        height:200px;
+        border: 1px solid blue;
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <button onclick="load()">Load</button>
+    <div>
+      <button id="sortByMaker" onclick="">Sort by maker</button>
+      <button id="sortByPrice">Sort by price</button>
+    </div>
+    <div id="cards">
+      <img width="300px" height="200px" id="loading" src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif"/>
+    </div>
+
+
+    <script defer>
+	function onStreamProcessed(data){
+	let outerDiv = document.querySelector("#cards");
+	    outerDiv.innerHTML = "";
+	data.forEach((student)=>{
+		let div = document.createElement("div");
+		div.textContent = student.maker+" "+student.model+" "+student.price;
+		outerDiv.appendChild(div);
+	});
+}
+function onSuccess(response){
+	response.json().then(onStreamProcessed);
+}
+function onError(error){
+	console.log(error);
+}
+
+function load(){
+	fetch("http://demo4296963.mockable.io/listCars").then(onSuccess,onError);
+}
+let z =fetch("http://demo4296963.mockable.io/listCars").then(function (response) {
+    return response.json();
+}).then(function (data) {
+    z=data;
+});
+let cards = document.getElementById("cards");
+let loading = document.getElementById("loading");
+let sortByMaker = document.getElementById('sortByMaker');
+let sortByPrice = document.getElementById('sortByPrice');
+
+sortByMaker.addEventListener("click",function(){
+    z.sort(function(a,b){
+      if(a.maker > b.maker) {
+      return true;}
+    if(a.maker < b.maker) {
+      return false;
+    }
+    return 0});
+        cards.innerHTML = "";
+    for(let i =0;i<z.length;i++){
+        cards.innerHTML += "<div class='item'>" +z[i]["maker"]+ " " + z[i]["model"] + " " + z[i]["price"] + "</div>";
+    }
+});
+sortByPrice.addEventListener("click",function(){
+    z.sort(function(a,b){
+      if(a.price > b.price) {
+          return true;}
+        if(a.price < b.price) {
+          return false;
+        }
+        return 0;
+    });
+    cards.innerHTML = "";
+    for(let i =0;i<z.length;i++){
+        cards.innerHTML += "<div class='item'>" +z[i]["maker"]+ " " + z[i]["model"] +" " + z[i]["price"] + "</span></div>";
+    }
+});
+
+    </script>
+  </body>
+
+</html>
